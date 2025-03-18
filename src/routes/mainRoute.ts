@@ -3,6 +3,7 @@ import teacherController from "../controllers/teacher.controller";
 import {
   commonStudentsValidation,
   registerValidation,
+  retrieveForNotificationsValidation,
   suspendStudentValidation,
 } from "../validations/validation";
 
@@ -17,6 +18,11 @@ router.post(
   "/suspend",
   suspendStudentValidation,
   teacherController.suspendStudent
+);
+router.post(
+  "/retrievefornotifications",
+  retrieveForNotificationsValidation,
+  teacherController.retrieveForNotifications
 );
 
 router.get(

@@ -26,4 +26,13 @@ const suspendStudent = catchAsync(async (req, res, next) => {
   return res.status(StatusCodes.NO_CONTENT).json();
 });
 
-export default { registerStudents, getCommonStudents, suspendStudent };
+const retrieveForNotifications = catchAsync(async (req, res, next) => {
+  const { teacher, notification } = req.body;
+  const recipients = await teacherService.retrieveForNotifications(
+    teacher,
+    notification
+  );
+  return res.status(StatusCodes.OK).json({ recipients });
+});
+
+export default { registerStudents, getCommonStudents, suspendStudent, retrieveForNotifications };

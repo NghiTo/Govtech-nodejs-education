@@ -44,3 +44,15 @@ export const suspendStudentValidation = celebrate({
       }),
   }),
 });
+
+export const retrieveForNotificationsValidation = celebrate({
+  [Segments.BODY]: Joi.object({
+    teacher: Joi.string().email().required().messages({
+      'any.required': `"teacher" field is required`,
+      'string.email': `"teacher" must be a valid email`,
+    }),
+    notification: Joi.string().required().messages({
+      'any.required': `"notification" field is required`,
+    }),
+  }),
+});

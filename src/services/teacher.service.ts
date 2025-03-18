@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/AppError";
 import MESSAGE from "../constants/message";
 import { StatusCodes } from "http-status-codes";
-
-const prisma = new PrismaClient();
+import prisma from "../utils/PrismaClient";
 
 const registerStudents = async (
   teacherEmail: string,
@@ -123,4 +121,48 @@ const suspendStudent = async (student: string) => {
   return;
 };
 
-export default { registerStudents, getCommonStudents, suspendStudent };
+const retrieveForNotifications = async (
+  teacher: string,
+  notification: string
+) => {
+  const mentionedEmails = notification
+    .split(" ")
+    .filter((word) => word.startsWith("@"))
+    .map((word) => word.substring(1));
+
+  const foundTeacher = await prisma.teacher.findUnique({
+    where: { email: teacher },
+    include: { students: { include: { student: true } } },
+  });
+  if (!foundTeacher) {
+    throw new AppError({
+      message: MESSAGE.TEACHER.NOT_FOUND,
+      statusCode: StatusCodes.NOT_FOUND,
+    });
+  }
+
+  const registeredStudents = foundTeacher.students
+    .filter((ts) => !ts.student.suspended)
+    .map((ts) => ts.student.email);
+
+  const mentionedStudents = await prisma.student.findMany({
+    where: {
+      email: { in: mentionedEmails },
+      suspended: false,
+    },
+  });
+
+  const mentionedStudentEmails = mentionedStudents.map((s) => s.email);
+
+  const recipients = Array.from(
+    new Set([...registeredStudents, ...mentionedStudentEmails])
+  );
+  return recipients;
+};
+
+export default {
+  registerStudents,
+  getCommonStudents,
+  suspendStudent,
+  retrieveForNotifications,
+};
