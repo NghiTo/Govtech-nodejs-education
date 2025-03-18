@@ -1,5 +1,22 @@
-version: '3.8'
+version: "3.8"
 services:
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_server
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:3000"
+    networks:
+      - main
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate dev && npm run seed && npm run dev"
   mysql:
     image: mysql:8
     ports:
@@ -10,9 +27,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 volumes:
   mysql_data:
+networks:
+  main:
+    driver: bridge
