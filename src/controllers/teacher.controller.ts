@@ -20,4 +20,10 @@ const getCommonStudents = catchAsync(async (req, res, next) => {
   return res.status(StatusCodes.OK).json({ students });
 });
 
-export default { registerStudents, getCommonStudents };
+const suspendStudent = catchAsync(async (req, res, next) => {
+  const student = req.body.student;
+  await teacherService.suspendStudent(student);
+  return res.status(StatusCodes.NO_CONTENT).json();
+});
+
+export default { registerStudents, getCommonStudents, suspendStudent };

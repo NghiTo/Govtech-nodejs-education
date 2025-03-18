@@ -1,6 +1,10 @@
 import { Router } from "express";
 import teacherController from "../controllers/teacher.controller";
-import { registerValidation } from "../validations/register.validation";
+import {
+  commonStudentsValidation,
+  registerValidation,
+  suspendStudentValidation,
+} from "../validations/validation";
 
 const router = Router();
 
@@ -9,7 +13,16 @@ router.post(
   registerValidation,
   teacherController.registerStudents
 );
+router.post(
+  "/suspend",
+  suspendStudentValidation,
+  teacherController.suspendStudent
+);
 
-router.get("/commonstudents", teacherController.getCommonStudents)
+router.get(
+  "/commonstudents",
+  commonStudentsValidation,
+  teacherController.getCommonStudents
+);
 
 export default router;

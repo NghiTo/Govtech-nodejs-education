@@ -106,4 +106,21 @@ const getCommonStudents = async (teacherEmails: string[]) => {
   return students.map((s) => s.email);
 };
 
-export default { registerStudents, getCommonStudents };
+const suspendStudent = async (student: string) => {
+  const foundStudent = await prisma.student.findUnique({
+    where: { email: student },
+  });
+  if (!foundStudent) {
+    throw new AppError({
+      message: MESSAGE.STUDENT.NOT_FOUND,
+      statusCode: StatusCodes.NOT_FOUND,
+    });
+  }
+  await prisma.student.update({
+    where: { email: student },
+    data: { suspended: true },
+  });
+  return;
+};
+
+export default { registerStudents, getCommonStudents, suspendStudent };
