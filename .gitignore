@@ -21,6 +21,7 @@ yarn-error.log*
 # Optional: OS specific
 .DS_Store
 Thumbs.db
+coverage
 
 # IDE specific
 .vscode/

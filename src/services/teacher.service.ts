@@ -61,4 +61,49 @@ const registerStudents = async (
   return;
 };
 
-export default { registerStudents };
+const getCommonStudents = async (teacherEmails: string[]) => {
+  const teachers = await prisma.teacher.findMany({
+    where: { email: { in: teacherEmails } },
+  });
+
+  if (teachers.length !== teacherEmails.length) {
+    throw new AppError({
+      message: MESSAGE.TEACHER.NOT_FOUND,
+      statusCode: StatusCodes.NOT_FOUND,
+    });
+  }
+  const teacherIds = teachers.map((teacher) => teacher.id);
+  const relations = await prisma.teacherStudent.findMany({
+    where: {
+      teacherId: { in: teacherIds },
+    },
+    select: { studentId: true, teacherId: true },
+  });
+
+  if (relations.length === 0) {
+    return [];
+  }
+  const studentCount: Record<string, number> = {};
+  relations.forEach((rel) => {
+    studentCount[rel.studentId] = (studentCount[rel.studentId] || 0) + 1;
+  });
+
+  const commonStudentIds = Object.keys(studentCount).filter(
+    (studentId) => studentCount[studentId] === teacherIds.length
+  );
+
+  if (commonStudentIds.length === 0) {
+    return [];
+  }
+
+  const students = await prisma.student.findMany({
+    where: {
+      id: { in: commonStudentIds },
+    },
+    select: { email: true },
+  });
+
+  return students.map((s) => s.email);
+};
+
+export default { registerStudents, getCommonStudents };

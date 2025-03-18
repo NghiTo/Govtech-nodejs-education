@@ -1,6 +1,6 @@
 const MESSAGE = {
   TEACHER: {
-    NOT_FOUND: "Teacher not found"
+    NOT_FOUND: "Teacher not found",
   }
 };
 

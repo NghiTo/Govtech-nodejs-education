@@ -6,7 +6,10 @@
     "dev": "nodemon src/app.ts",
     "migrate": "npx prisma migrate dev",
     "generate": "npx prisma generate",
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "test:coverage": "jest --coverage"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -16,16 +19,21 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "celebrate": "^15.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "http-status-codes": "^2.3.0",
+    "joi": "^17.13.3",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.13.10",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.9",
     "prisma": "^6.5.0",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.2"
